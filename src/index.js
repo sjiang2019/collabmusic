@@ -57,28 +57,54 @@ axios.get(
             }
 
         })
-        console.log(r.status);
     });
-
-
 
 function appendSong(trackName, artistName, albumName) {
 
-    // parent node
+    // create parent node
     var parentNode = document.createElement("div");
     parentNode.setAttribute("class", "song-container");
 
-    // child node
-    var childNode = document.createElement("div");
-    childNode.setAttribute("class", "song-left");
-    childNode.textContent = trackName;
-
-    parentNode.appendChild(childNode);
-
-    // append node to main
+    // append parent node to main
     document.getElementById("main").appendChild(parentNode);
+
+    // create container node for arrows
+    var arrowContainerNode = document.createElement("div");
+    arrowContainerNode.setAttribute("class", "arrow-container");
+
+    // append arrow container node to parent node
+    parentNode.appendChild(arrowContainerNode);
+
+    // create and append up arrow
+    var upArrow = document.createElement("img");
+    upArrow.setAttribute("src", "src/up-arrow.png");
+    arrowContainerNode.appendChild(upArrow);
+    upArrow.onclick = function() { clickUpArrow(trackName) };
+
+    // create and append down arrow
+    var downArrow = document.createElement("img");
+    downArrow.setAttribute("src", "src/down-arrow.png");
+    arrowContainerNode.appendChild(downArrow);
+    downArrow.onclick = function() { clickDownArrow(trackName) };
+
+    // create container node for tracks
+    var trackContainerNode = document.createElement("div");
+    trackContainerNode.setAttribute("class", "track-container");
+    parentNode.appendChild(trackContainerNode);
+
+    // create track name node
+    var trackNameNode = document.createElement("div");
+    trackNameNode.setAttribute("class", "song-left");
+    trackNameNode.textContent = trackName;
+
+    // append track name node to parent
+    trackContainerNode.appendChild(trackNameNode);
 }
 
+appendSong();
+
+function clickUpArrow(trackName) { console.log(trackName) }
 
 
 appendSong();
+function clickDownArrow(trackName) { console.log(trackName) }
