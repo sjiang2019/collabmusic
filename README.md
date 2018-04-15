@@ -20,4 +20,11 @@ With our app, anyone with the link to the page can have their musical input and 
 	- an https link will be generated that tunnels back to your localhost:8080
 
 
-## 
+## Future work
+
+Here are some things that didn't quite work that we hope to fix in the near future.
+
+- Our reording algorithm isn't perfect and in some edge cases may fail due to index out of bound errors. 
+
+- We had trouble getting an access token to refresh, so we just update it ourselves every 1.5 hours
+
