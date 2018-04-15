@@ -37,6 +37,5 @@ Our app supplies three recommendations based off of the current state of the pla
 * Webpack
 * Google Material Desgin Components
 
-
-
-- There are also some scaling issues on mobile devices where songs with long names may run off the screen.
+## Demo
+[![Collabify Demo](https://i.ytimg.com/vi/iAno2P7w-qs/hqdefault.jpg?sqp=-oaymwEXCPYBEIoBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD61moM20ukqoHc-hz4W6H6LAtjig)](https://youtu.be/iAno2P7w-qs)
