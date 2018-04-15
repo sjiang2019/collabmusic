@@ -37,9 +37,15 @@ body {
 .song-container {
     background: #00693e;
     height: 125px;
-    /* margin: 5px; */
     display: flex;
     flex-direction: row;
+}
+
+.rec-container {
+    background: #00693e;
+    height: 125px;
+    display: flex;
+    flex-direction: column;
 }
 
 .arrow-container {
@@ -82,7 +88,8 @@ body {
     /* margin-bottom: 0px; */
 }
 
-.track-container {
+.track-container,
+.track-rec-container {
     background: #00693e;
     padding-right: 0px;
 }
