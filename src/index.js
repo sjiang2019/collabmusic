@@ -128,6 +128,7 @@ function appendCurrentTrack(trackName, artistName, albumName, score, albumCover)
     // create and append the album cover for each song
     var albumCoverNode = document.createElement("div");
     albumCoverNode.setAttribute("class", "album-cover");
+    albumCoverNode.setAttribute("id", "album-cover");
     var cover = document.createElement('img')
     cover.setAttribute('src', albumCover)
     albumCoverNode.appendChild(cover)
@@ -216,6 +217,8 @@ function appendSong(trackName, artistName, albumName, score, albumCover) {
     // create and append the album cover for each song
     var albumCoverNode = document.createElement("div");
     albumCoverNode.setAttribute("class", "album-cover");
+    albumCoverNode.setAttribute("id", "album-cover");
+
     var cover = document.createElement('img')
     cover.setAttribute('src', albumCover)
     albumCoverNode.appendChild(cover)
@@ -267,7 +270,7 @@ function clickSkipArrow() {
 
     skipObject.once("value", function(data) {
         // If you're already at 9 that means you are clicking it and the score will be 10 -> skip song
-        if (data.val() == 9) {
+        if (data.val() == 5) {
             // axios call to skip song
             axios({
                     url: 'https://api.spotify.com/v1/me/player/next',
@@ -287,7 +290,13 @@ function clickSkipArrow() {
                                 }
                             }
                         ).then(r => {
+                            // console.log(r.data.item.album.images[2].url)
+                            var imageDiv = document.getElementById('album-cover')
+                            console.log(imageDiv.firstChild)
+                            imageDiv.firstChild.src = r.data.item.album.images[2].url
                             document.getElementById('curr-song').textContent = 'Current Track: ' + r.data.item.name + ' (Upvote to skip!)'
+
+
                         })
                     }, 1500)
                 })
