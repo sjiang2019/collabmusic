@@ -85,6 +85,18 @@ body {
 .track-container {
     background: #00693e;
     padding-right: 0px;
+    /* display: flex; */
+}
+
+.album-cover{
+  /* border: 3px solid red; */
+}
+
+.album-cover img{
+  padding-top: 3px;
+  padding-left: 20px;
+  width: 120px;
+
 }
 
 
