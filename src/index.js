@@ -23,8 +23,8 @@ firebase.initializeApp(config);
 const dbRefObject = firebase.database().ref().child('songs');
 
 // render the current song and tracks into the screen
-getCurrentSong()
-getAllTracks()
+getCurrentSong();
+getAllTracks();
 
 /**
  * Function to get the current song that's playing. Makes a call to axios and appends the song and buttons
@@ -47,6 +47,8 @@ function getCurrentSong() {
     })
 }
 
+var trackId = [];
+
 /**
  * Function to get all tracks and render them to the screen. Makes a call to the playlist/id/tracks
  * endpoint and on success loops through each track and appends the relevant information,
@@ -66,14 +68,96 @@ function getAllTracks() {
 
                 dbRefObject.once('value').then(function(snapshot) {
                     if (snapshot.val()[item.track.name] != undefined) {
+                        trackId.push(item.track.id);
                         appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score, item.track.album.images[2].url);
                     }
                 })
             })
+
+            setTimeout(() => {
+                getRecs();
+            }, 5000)
+
         });
 }
 
+function getRecs() {
 
+    str = ""
+
+    for (i = 0; i < trackId.length; i++) {
+        str = str + trackId[i];
+        if (i < trackId.length - 1) {
+            str = str + "%2C"
+        }
+    }
+
+    axios.get(
+        'https://api.spotify.com/v1/recommendations?limit=3&seed_tracks=' + str, {
+            headers: {
+                'Authorization': `Bearer ${appToken}`
+            }
+        }
+    ).then(function(r) {
+
+        // create element on page
+        var mdcCardContainer = document.createElement("div");
+        mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
+
+        document.getElementById("main").appendChild(mdcCardContainer);
+
+        // create parent node
+        var parentNode = document.createElement("div");
+        parentNode.setAttribute("class", "rec-container");
+        parentNode.setAttribute("id", "rec-container");
+
+        // append parent node to main
+        mdcCardContainer.appendChild(parentNode);
+
+        r.data.tracks.map((item) => {
+
+            var recName = item.name;
+            var recArtist = item.artists[0].name;
+            var album = item.album.name;
+
+            addRecToPage(recName, recArtist, album);
+
+        })
+
+    })
+}
+
+function addRecToPage(recName, recArtist, album) {
+
+    var recContainer = document.getElementById("rec-container");
+
+    // create container node for tracks
+    var trackContainerNode = document.createElement("div");
+    trackContainerNode.setAttribute("class", "track-rec-container");
+    recContainer.appendChild(trackContainerNode);
+
+    // create track name node
+    var trackNameNode = document.createElement("div");
+    trackNameNode.setAttribute("class", "song-left");
+    trackNameNode.setAttribute('id', 'curr-song')
+    trackNameNode.textContent = "Recommendation: " + recName;
+    //
+    // create track artist node
+    var trackArtistNode = document.createElement("div");
+    trackArtistNode.setAttribute("class", "song-left small");
+    trackArtistNode.textContent = "Artist: " + recArtist;
+
+    // create track album node
+    var trackAlbumNode = document.createElement("div");
+    trackAlbumNode.setAttribute("class", "song-left small");
+    trackAlbumNode.textContent = "Album: " + album;
+
+    // // append track name node to parent
+    trackContainerNode.appendChild(trackNameNode);
+    trackContainerNode.appendChild(trackArtistNode);
+    trackContainerNode.appendChild(trackAlbumNode);
+
+}
 
 /**
  * Function to append the current track with a skip button
@@ -109,6 +193,7 @@ function appendCurrentTrack(trackName, artistName, albumName, score, albumCover)
     upArrow.setAttribute("src", "src/up-arrow.png");
     upArrow.setAttribute("id", "arrow");
     arrowContainerNode.appendChild(upArrow);
+    upArrow.setAttribute("id", "arrow");
     upArrow.onclick = function() { clickSkipArrow() };
 
     // append score to the right of the text
@@ -138,7 +223,7 @@ function appendCurrentTrack(trackName, artistName, albumName, score, albumCover)
     var trackContainerNode = document.createElement("div");
     trackContainerNode.setAttribute("class", "track-container");
     parentNode.appendChild(trackContainerNode);
-    //
+
     // create track name node
     var trackNameNode = document.createElement("div");
     trackNameNode.setAttribute("class", "song-left");
