@@ -42,7 +42,7 @@ function getCurrentSong() {
         const skipObject = firebase.database().ref().child('skip')
         skipObject.once("value", function(data) {
             // console.log(r.data.item.href)
-            appendCurrentTrack(r.data.item.name, r.data.item.artists[0].name, r.data.item.album.name, data.val())
+            appendCurrentTrack(r.data.item.name, r.data.item.artists[0].name, r.data.item.album.name, data.val(), r.data.item.album.images[2].url)
         })
     })
 }
@@ -82,7 +82,7 @@ function getAllTracks() {
  * @param {*} albumName
  * @param {*} score
  */
-function appendCurrentTrack(trackName, artistName, albumName, score) {
+function appendCurrentTrack(trackName, artistName, albumName, score, albumCover) {
 
     var mdcCardContainer = document.createElement("div");
     mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
@@ -124,6 +124,14 @@ function appendCurrentTrack(trackName, artistName, albumName, score) {
     downArrow.setAttribute("id", "arrow");
     arrowContainerNode.appendChild(downArrow);
     downArrow.onclick = function() { clickDownArrow(trackName) };
+
+    // create and append the album cover for each song
+    var albumCoverNode = document.createElement("div");
+    albumCoverNode.setAttribute("class", "album-cover");
+    var cover = document.createElement('img')
+    cover.setAttribute('src', albumCover)
+    albumCoverNode.appendChild(cover)
+    parentNode.appendChild(albumCoverNode);
 
     // create container node for tracks
     var trackContainerNode = document.createElement("div");
