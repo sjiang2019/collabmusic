@@ -1,7 +1,7 @@
 .song-container {
     background: bisque;
     width: 100%;
-    height: 100px;
+    height: 125px;
     margin: 5px;
     display: flex;
     flex-direction: row;
