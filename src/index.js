@@ -1,25 +1,46 @@
 const $ = require('jquery');
 const axios = require('axios');
+var firebase = require('firebase');
 
-// var response;
+// firebase setup for chan's account
+var config = {
+  apiKey: "AIzaSyBY9IbaziUb2xDOrVVXlVaTcuaQ1TFlRk4",
+  authDomain: "spotify-collab-4ffdc.firebaseapp.com",
+  databaseURL: "https://spotify-collab-4ffdc.firebaseio.com",
+  projectId: "spotify-collab-4ffdc",
+  storageBucket: "",
+  messagingSenderId: "831686907388"
+};
 
+// initializing the database
+firebase.initializeApp(config);
+const dbRefObject = firebase.database().ref().child('songs');
+
+// variables for axios
 var userId = '121421771',
     playlistId = '79UO9HP9psMNZtUPUWrk7C';
 
+// make a get request to get all the tracks in the playlist
+// uses drew's hardcoded token
 axios.get(
         'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks', {
             headers: {
-                "Authorization": "Bearer BQA0arzI184LKZ8SyYkpVdWjoeLglfSrQLiRjw4oXqztkBh9ktrSMhjqnVjmaR4c0dZH2PU6ZdW02p-xQbwCvLqR0gUmEWAdDTH5Ep60c8uSqXaTgzrCfXid6WKRLlOT8gR7WLdOFVyLzvASnhkQjVqkJZAmPTsTylazlh74V1j2pqPTZa_La6Hj8opBqONFviePjIdCsEYcFB5rRsDKIk9aK4VBMYVmk_SWYNEkc7KWyPmyrtCtcCYgqhQG3c7un9SHDw_7LA"
+                "Authorization": "Bearer BQCWmyxJOB-W8miIHQ1pjOzA8C1-KZyBge1Rt_ICkvDEOVHEYDHnjJ_7dttPU8gE60CpH2LunFIH0jBgF4uAcpsnpcI0oKRXfGp_rxH3R9OHVx6ASwht4CtHHXN7BHFgFgYV_xPrF48_ceStOqTnovueST2_hIvSMr-K_81R287XDE6rBMaGe9srXuZc9oCFJ6RLxUbBuqbLE79w5NTZf1UwRcYoEI0tFH5G3J-vGdhmtZI9f0X0FeRDS7XnTbFhGX9NOmVmtw"
             }
         }
     )
+    // On successful call with axios
+    // loop through all the items and add the songs to the page with their scores
     .then(function(r) {
         r.data.items.map((item) => {
-            appendSong(item.track.name, item.track.artists[0].name, item.track.album.name);
+            dbRefObject.once('value').then(function(snapshot) {
+              appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score);
+            })
         })
     });
 
-function appendSong(trackName, artistName, albumName) {
+// Function to append song, takes in trackName, artistName, albumName, and score
+function appendSong(trackName, artistName, albumName, score) {
 
     // create parent node
     var parentNode = document.createElement("div");
@@ -41,6 +62,11 @@ function appendSong(trackName, artistName, albumName) {
     arrowContainerNode.appendChild(upArrow);
     upArrow.onclick = function() { clickUpArrow(trackName) };
 
+    // create and append score
+    var songScore = document.createElement("div");
+    songScore.textContent = score;
+    arrowContainerNode.appendChild(songScore);
+
     // create and append down arrow
     var downArrow = document.createElement("img");
     downArrow.setAttribute("src", "src/down-arrow.png");
@@ -61,8 +87,21 @@ function appendSong(trackName, artistName, albumName) {
     trackContainerNode.appendChild(trackNameNode);
 }
 
-appendSong();
+function clickUpArrow(trackName) {
+  dbRefObject.once("value", function(data) {
+    // console.log(dbRefObject.child(trackName))
+    const copy = Object.assign({}, data.val()[trackName])
+    copy['score'] += 1
+    // console.log(copy)
+    dbRefObject.child(trackName).set({
+      artist: copy.artist,
+      album: copy.album,
+      id: copy.id,
+      score: copy.score
+    })
+  });
+   console.log('Upvoted ', trackName)
+}
 
-function clickUpArrow(trackName) { console.log(trackName) }
 
 function clickDownArrow(trackName) { console.log(trackName) }
