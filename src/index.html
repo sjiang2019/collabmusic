@@ -4,21 +4,32 @@
 <head>
     <title>starter pack</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
     <link href="src/style.css" rel="stylesheet">
+    <link href="normalize.min.css" rel="stylesheet">
+    <link href="material-components-web.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <div class="header">
-      <h1>Collaborative Spotify Playlist!</h1>
-      <p>Hate the current song? Vote to skip it!</p>
-      <p>Want a song higher up on the playlist? Vote to bump it!</p>
-
+<body class="mdc-typography">
+    <!-- <div class="header">
+        <h1>Collaborative Spotify Playlist!</h1>
+        <p>Hate the current song? Vote to skip it!</p>
+        <p>Want a song higher up on the playlist? Vote to bump it!</p>
+    </div> -->
+    <header class="mdc-toolbar mdc-toolbar--fixed header--blue" id="header--blue">
+        <div class="mdc-toolbar__row mdc-toolbar__row--expand">
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-start mdc-toolbar__section--flex">
+                <span class="mdc-toolbar__title">Notify: Playlist Collaboration with Spotify!</span>
+            </section>
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
+                <span class="mdc-toolbar__title">Dartmouth Hackathon IV</span>
+            </section>
+        </div>
+    </header>
+    <div id="website-container">
+        <div id="main" class="mdc-toolbar-fixed-adjust">
+        </div>
     </div>
-    <div id="main">
-    </div>
-
-
 </body>
 
 </html>

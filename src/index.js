@@ -4,19 +4,19 @@ var firebase = require('firebase');
 
 // firebase setup
 var config = {
-  apiKey: "AIzaSyBY9IbaziUb2xDOrVVXlVaTcuaQ1TFlRk4",
-  authDomain: "spotify-collab-4ffdc.firebaseapp.com",
-  databaseURL: "https://spotify-collab-4ffdc.firebaseio.com",
-  projectId: "spotify-collab-4ffdc",
-  storageBucket: "",
-  messagingSenderId: "831686907388"
+    apiKey: "AIzaSyBY9IbaziUb2xDOrVVXlVaTcuaQ1TFlRk4",
+    authDomain: "spotify-collab-4ffdc.firebaseapp.com",
+    databaseURL: "https://spotify-collab-4ffdc.firebaseio.com",
+    projectId: "spotify-collab-4ffdc",
+    storageBucket: "",
+    messagingSenderId: "831686907388"
 };
 
 // variables for axios
 // appToken is hardcoded and needs to be refreshed occasionally
 const userId = '121421771'
 const playlistId = '79UO9HP9psMNZtUPUWrk7C'
-const appToken = 'BQD_rE6y-ZLBBkZ3lzK1TSPTAXp2F1r7PRbv9wc2Cz-AqTzaIvhm41iOHc9T5COq0jbbcNw0RF_bc3WHz7MZUpJ2PwSQ7bAdudfLpRkeTdJVr-IgyIk8wN0wSdjK5RIzRPdm5k6NIblQoSkxfOvH7npg1uBwwTN6oedwk1-oZWb7mFGrW87X3c68o5s4BOAKxJCr2K2ZloSjsIkkwnKJ5Evlfhqg8fajBQylTjr-Ky9cmLNyp52yNo32HekNCqy6OviOmpU_uQ'
+const appToken = 'BQDVMKRlfXdRygg2w65MnWTPcMTzpE1zxj4eFIIBilSHUmDccjFNEurquFEPA2-O-m6kIjwXUJpha8EHoTdoRhzlopjtXWUVP4MplQbQIuUWPxzbVvp-QzGpy9-7L_w5JqCusdNM1o-SudwkdGEXyikMDvirmFP6Kx8zDA9qa0BwgRrNz2WuH8HZyaqDE1AU4VL_bYV7bzKAp98vL-_LL8f_who3HbIN45OrT4VlMySKFDtw-ETMEXWn2ytYH2t8YUeTa-PfHQ'
 
 // initializing the database
 firebase.initializeApp(config);
@@ -31,19 +31,19 @@ getAllTracks()
  * to the screen (appears on the bottom). If users click the up arrow 10 times, the spotify player will skip
  * the current song and move onto the next song.
  */
-function getCurrentSong(){
-  axios.get(
-          "https://api.spotify.com/v1/me/player/currently-playing", {
-              headers: {
-                  'Authorization': `Bearer ${appToken}`
-              }
-          }
-        ).then(r => {
-          const skipObject = firebase.database().ref().child('skip')
-          skipObject.once("value", function(data) {
+function getCurrentSong() {
+    axios.get(
+        "https://api.spotify.com/v1/me/player/currently-playing", {
+            headers: {
+                'Authorization': `Bearer ${appToken}`
+            }
+        }
+    ).then(r => {
+        const skipObject = firebase.database().ref().child('skip')
+        skipObject.once("value", function(data) {
             appendCurrentTrack(r.data.item.name, r.data.item.artists[0].name, r.data.item.album.name, data.val())
-          })
         })
+    })
 }
 
 /**
@@ -51,24 +51,24 @@ function getCurrentSong(){
  * endpoint and on success loops through each track and appends the relevant information, 
  * such as song name, artist, and album.
  */
-function getAllTracks(){
-  axios.get(
-          'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks', {
-              headers: {
-                  'Authorization': `Bearer ${appToken}`
-              }
-          }
-      )
-      .then(function(r) {
-          r.data.items.map((item) => {
-
-              dbRefObject.once('value').then(function(snapshot) {
-                if (snapshot.val()[item.track.name] != undefined){
-                  appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score);
+function getAllTracks() {
+    axios.get(
+            'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks', {
+                headers: {
+                    'Authorization': `Bearer ${appToken}`
                 }
-              })
-          })
-      });
+            }
+        )
+        .then(function(r) {
+            r.data.items.map((item) => {
+
+                dbRefObject.once('value').then(function(snapshot) {
+                    if (snapshot.val()[item.track.name] != undefined) {
+                        appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score);
+                    }
+                })
+            })
+        });
 }
 
 
@@ -80,83 +80,20 @@ function getAllTracks(){
  * @param {*} albumName 
  * @param {*} score 
  */
-function appendCurrentTrack(trackName, artistName, albumName, score){
-  // create parent node
-  var parentNode = document.createElement("div");
-  parentNode.setAttribute("class", "song-container");
+function appendCurrentTrack(trackName, artistName, albumName, score) {
 
-  // append parent node to main
-  document.getElementById("main").appendChild(parentNode);
+    var mdcCardContainer = document.createElement("div");
+    mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
 
-  // create container node for arrows
-  var arrowContainerNode = document.createElement("div");
-  arrowContainerNode.setAttribute("class", "arrow-container");
-
-  // append arrow container node to parent node
-  parentNode.appendChild(arrowContainerNode);
-
-  // create and append up arrow
-  var upArrow = document.createElement("img");
-  upArrow.setAttribute("src", "src/up-arrow.png");
-  arrowContainerNode.appendChild(upArrow);
-  upArrow.onclick = function() { clickSkipArrow() };
-
-  // create and append down arrow
-  var downArrow = document.createElement("img");
-  downArrow.setAttribute("src", "src/down-arrow.png");
-  arrowContainerNode.appendChild(downArrow);
-  downArrow.onclick = function() { clickDownArrow(trackName) };
-
-  // create container node for tracks
-  var trackContainerNode = document.createElement("div");
-  trackContainerNode.setAttribute("class", "track-container");
-  parentNode.appendChild(trackContainerNode);
-  //
-  // create track name node
-  var trackNameNode = document.createElement("div");
-  trackNameNode.setAttribute("class", "song-left");
-  trackNameNode.setAttribute('id', 'curr-song')
-  trackNameNode.textContent = "Current Track: " + trackName + ' (Upvote to skip!)';
-  //
-  // create track artist node
-  var trackArtistNode = document.createElement("div");
-  trackArtistNode.setAttribute("class", "song-left small");
-  trackArtistNode.textContent = "Artist: " + artistName;
-
-  // create track album node
-  var trackAlbumNode = document.createElement("div");
-  trackAlbumNode.setAttribute("class", "song-left small");
-  trackAlbumNode.textContent = "Album: " + albumName;
-
-  // // append track name node to parent
-  trackContainerNode.appendChild(trackNameNode);
-  trackContainerNode.appendChild(trackArtistNode);
-  trackContainerNode.appendChild(trackAlbumNode);
-  //
-  // append score to the right of the text
-  var songScore = document.createElement("div");
-  songScore.setAttribute("class", "score")
-  songScore.setAttribute("id", "score")
-  songScore.textContent = score;
-  parentNode.appendChild(songScore);
-}
-
-
-/**
- * Function to append a song container with the song's information
- * @param {*} trackName 
- * @param {*} artistName 
- * @param {*} albumName 
- * @param {*} score 
- */
-function appendSong(trackName, artistName, albumName, score) {
+    document.getElementById("main").appendChild(mdcCardContainer);
 
     // create parent node
     var parentNode = document.createElement("div");
     parentNode.setAttribute("class", "song-container");
+    parentNode.setAttribute("id", "song-container");
 
     // append parent node to main
-    document.getElementById("main").appendChild(parentNode);
+    mdcCardContainer.appendChild(parentNode);
 
     // create container node for arrows
     var arrowContainerNode = document.createElement("div");
@@ -169,11 +106,97 @@ function appendSong(trackName, artistName, albumName, score) {
     var upArrow = document.createElement("img");
     upArrow.setAttribute("src", "src/up-arrow.png");
     arrowContainerNode.appendChild(upArrow);
-    upArrow.onclick = function() { clickUpArrow(trackName) };
+    upArrow.onclick = function() { clickSkipArrow() };
+
+    // append score to the right of the text
+    var songScore = document.createElement("div");
+    songScore.setAttribute("class", "score")
+    songScore.setAttribute("id", "score")
+    songScore.textContent = score;
+    arrowContainerNode.appendChild(songScore);
 
     // create and append down arrow
     var downArrow = document.createElement("img");
     downArrow.setAttribute("src", "src/down-arrow.png");
+    arrowContainerNode.appendChild(downArrow);
+    downArrow.onclick = function() { clickDownArrow(trackName) };
+
+    // create container node for tracks
+    var trackContainerNode = document.createElement("div");
+    trackContainerNode.setAttribute("class", "track-container");
+    parentNode.appendChild(trackContainerNode);
+    //
+    // create track name node
+    var trackNameNode = document.createElement("div");
+    trackNameNode.setAttribute("class", "song-left");
+    trackNameNode.setAttribute('id', 'curr-song')
+    trackNameNode.textContent = "Current Track: " + trackName + ' (Upvote to skip!)';
+    //
+    // create track artist node
+    var trackArtistNode = document.createElement("div");
+    trackArtistNode.setAttribute("class", "song-left small");
+    trackArtistNode.textContent = "Artist: " + artistName;
+
+    // create track album node
+    var trackAlbumNode = document.createElement("div");
+    trackAlbumNode.setAttribute("class", "song-left small");
+    trackAlbumNode.textContent = "Album: " + albumName;
+
+    // // append track name node to parent
+    trackContainerNode.appendChild(trackNameNode);
+    trackContainerNode.appendChild(trackArtistNode);
+    trackContainerNode.appendChild(trackAlbumNode);
+
+}
+
+
+/**
+ * Function to append a song container with the song's information
+ * @param {*} trackName 
+ * @param {*} artistName 
+ * @param {*} albumName 
+ * @param {*} score 
+ */
+function appendSong(trackName, artistName, albumName, score) {
+
+    var mdcCardContainer = document.createElement("div");
+    mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
+
+    document.getElementById("main").appendChild(mdcCardContainer);
+
+    // create parent node
+    var parentNode = document.createElement("div");
+    parentNode.setAttribute("class", "song-container");
+    parentNode.setAttribute("id", "song-container");
+
+    // append parent node to main
+    mdcCardContainer.appendChild(parentNode);
+
+    // create container node for arrows
+    var arrowContainerNode = document.createElement("div");
+    arrowContainerNode.setAttribute("class", "arrow-container");
+
+    // append arrow container node to parent node
+    parentNode.appendChild(arrowContainerNode);
+
+    // create and append up arrow
+    var upArrow = document.createElement("img");
+    upArrow.setAttribute("src", "src/up-arrow.png");
+    upArrow.setAttribute("id", "arrow");
+    arrowContainerNode.appendChild(upArrow);
+    upArrow.onclick = function() { clickUpArrow(trackName) };
+
+    // append score to the right of the text
+    var songScore = document.createElement("div");
+    songScore.setAttribute("class", "score")
+    songScore.setAttribute("id", trackName);
+    songScore.textContent = score;
+    arrowContainerNode.appendChild(songScore);
+
+    // create and append down arrow
+    var downArrow = document.createElement("img");
+    downArrow.setAttribute("src", "src/down-arrow.png");
+    downArrow.setAttribute("id", "arrow");
     arrowContainerNode.appendChild(downArrow);
     downArrow.onclick = function() { clickDownArrow(trackName) };
 
@@ -198,19 +221,10 @@ function appendSong(trackName, artistName, albumName, score) {
     trackAlbumNode.setAttribute("class", "song-left small");
     trackAlbumNode.textContent = "Album: " + albumName;
 
-
     // append track name node to parent
     trackContainerNode.appendChild(trackNameNode);
     trackContainerNode.appendChild(trackArtistNode);
     trackContainerNode.appendChild(trackAlbumNode);
-
-    // append score to the right of the text
-    var songScore = document.createElement("div");
-    songScore.setAttribute("class", "score")
-    songScore.setAttribute("id", trackName);
-    songScore.textContent = score;
-    parentNode.appendChild(songScore);
-
 
 }
 
@@ -220,45 +234,45 @@ function appendSong(trackName, artistName, albumName, score) {
  * to skip the song, the function makes an axios call to play the next song. The value in the firebase 
  * db then resets to 0 
  */
-function clickSkipArrow(){
-  const dbRef = firebase.database().ref()
-  const skipObject = dbRef.child('skip');
+function clickSkipArrow() {
+    const dbRef = firebase.database().ref()
+    const skipObject = dbRef.child('skip');
 
-  var currSong;
+    var currSong;
 
-  skipObject.once("value", function(data) {
-    // If you're already at 9 that means you are clicking it and the score will be 10 -> skip song
-    if (data.val() == 9){
-      // axios call to skip song
-      axios({
-        url: 'https://api.spotify.com/v1/me/player/next',
-        method: 'post',
-        headers: {
-          'Authorization': `Bearer ${appToken}`
-        }
-      })
-      .then(r => {
-        // reset the current song that's playing
-        // setTimeout is used to ensure that it syncs up properly
-        setTimeout(() => {
-          axios.get(
-                  "https://api.spotify.com/v1/me/player/currently-playing", {
-                      headers: {
-                          'Authorization': `Bearer ${appToken}`
-                      }
-                  }
-                ).then(r => {
-                  document.getElementById('curr-song').textContent = 'Current Track: ' + r.data.item.name + ' (Upvote to skip!)'
+    skipObject.once("value", function(data) {
+        // If you're already at 9 that means you are clicking it and the score will be 10 -> skip song
+        if (data.val() == 9) {
+            // axios call to skip song
+            axios({
+                    url: 'https://api.spotify.com/v1/me/player/next',
+                    method: 'post',
+                    headers: {
+                        'Authorization': `Bearer ${appToken}`
+                    }
                 })
-        }, 1500)
-      })
-      // reset the database value "skip" back to 0
-      dbRef.update({skip: 0})
-    } else{
-      // You haven't hit 10 yet, just increment the value "skip" by 1
-      dbRef.update({skip: data.val() + 1})
-    }
-  });
+                .then(r => {
+                    // reset the current song that's playing
+                    // setTimeout is used to ensure that it syncs up properly
+                    setTimeout(() => {
+                        axios.get(
+                            "https://api.spotify.com/v1/me/player/currently-playing", {
+                                headers: {
+                                    'Authorization': `Bearer ${appToken}`
+                                }
+                            }
+                        ).then(r => {
+                            document.getElementById('curr-song').textContent = 'Current Track: ' + r.data.item.name + ' (Upvote to skip!)'
+                        })
+                    }, 1500)
+                })
+            // reset the database value "skip" back to 0
+            dbRef.update({ skip: 0 })
+        } else {
+            // You haven't hit 10 yet, just increment the value "skip" by 1
+            dbRef.update({ skip: data.val() + 1 })
+        }
+    });
 }
 
 /**
@@ -266,115 +280,115 @@ function clickSkipArrow(){
  * @param {*} trackName 
  */
 function clickUpArrow(trackName) {
-  var newOldIndex = 0;
-  var found = false;
-  axios.get(
-          'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks', {
-              headers: {
-                  'Authorization': `Bearer ${appToken}`
-              }
-          }
-      ).then(function(r) {
-          r.data.items.map((item) => {
-                if(item.track.name !== trackName && found === false) {
-                  newOldIndex += 1;
-                } else if (item.track.name === trackName) {
-                  found = true;
+    var newOldIndex = 0;
+    var found = false;
+    axios.get(
+        'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks', {
+            headers: {
+                'Authorization': `Bearer ${appToken}`
+            }
+        }
+    ).then(function(r) {
+        r.data.items.map((item) => {
+            if (item.track.name !== trackName && found === false) {
+                newOldIndex += 1;
+            } else if (item.track.name === trackName) {
+                found = true;
+            }
+        })
+
+        dbRefObject.once("value", function(data) {
+            const copy = Object.assign({}, data.val()[trackName])
+            copy['score'] += 1
+            dbRefObject.child(trackName).update({
+                artist: copy.artist,
+                album: copy.album,
+                id: copy.id,
+                score: copy.score
+            })
+        });
+
+        dbRefObject.once("value", function(data) {
+
+            // current song
+            var currentSong = trackName;
+
+            // master with all songs + metadata
+            const copy = Object.assign({}, data.val());
+
+            var betterThan = 0;
+            var numSongs = Object.keys(copy).length - 1;
+
+            // looping over each song
+            for (key in copy) {
+
+                // score of current song
+                var currentSongScore = copy[currentSong]['score'];
+
+                // score of not current song
+                if (key != currentSong) {
+                    var otherSongScore = copy[key]['score']
+                    if (currentSongScore > otherSongScore) {
+                        betterThan += 1
+                    }
                 }
-          })
+            }
 
-  dbRefObject.once("value", function(data) {
-    const copy = Object.assign({}, data.val()[trackName])
-    copy['score'] += 1
-    dbRefObject.child(trackName).update({
-      artist: copy.artist,
-      album: copy.album,
-      id: copy.id,
-      score: copy.score
-    })
-  });
+            var position = numSongs - betterThan;
 
-  dbRefObject.once("value", function(data) {
+            var index = 0;
+            var above = 0;
+            var below = 0;
+            var equal = 0;
 
-    // current song
-    var currentSong = trackName;
+            for (key in copy) {
 
-    // master with all songs + metadata
-    const copy = Object.assign({}, data.val());
+                // score of current song
+                var currentSongScore = copy[currentSong]['score'] - 1;
 
-    var betterThan = 0;
-    var numSongs = Object.keys(copy).length - 1;
+                // score of not current song
+                if (key != currentSong) {
+                    var otherSongScore = copy[key]['score'];
 
-    // looping over each song
-    for (key in copy) {
+                    if (currentSongScore > otherSongScore) {
+                        above += 1;
+                    } else if (currentSongScore < otherSongScore) {
+                        below += 1;
+                    } else {
+                        equal += 1;
+                    }
+                    index = numSongs - above;
+                }
+            }
 
-      // score of current song
-      var currentSongScore = copy[currentSong]['score'];
-
-      // score of not current song
-      if (key != currentSong) {
-        var otherSongScore = copy[key]['score']
-        if (currentSongScore > otherSongScore) {
-          betterThan += 1
-        }
-      }
-    }
-
-    var position = numSongs - betterThan;
-
-    var index = 0;
-    var above = 0;
-    var below = 0;
-    var equal = 0;
-
-    for (key in copy) {
-
-      // score of current song
-      var currentSongScore = copy[currentSong]['score']-1;
-
-      // score of not current song
-      if (key != currentSong) {
-        var otherSongScore = copy[key]['score'];
-
-        if (currentSongScore > otherSongScore) {
-          above += 1;
-        } else if (currentSongScore < otherSongScore) {
-          below += 1;
-        } else {
-          equal += 1;
-        }
-        index = numSongs - above;
-      }
-    }
-
-    var rangeStart = newOldIndex;
-    var rangeLength = 1;
-    var insertBefore = position - 1;
+            var rangeStart = newOldIndex;
+            var rangeLength = 1;
+            var insertBefore = position - 1;
 
 
-    axios({
-      method: 'put',
-      url: 'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks',
-      data: {
-        range_start: rangeStart,
-        range_length: 1,
-        insert_before: insertBefore
-      },
-      headers: {
-        'Authorization': `Bearer ${appToken}`
-      }
-    })
-    .then(r => {
-      console.log(r)
-    })
-    .catch(e => {
-      console.log(e)
-    })
+            axios({
+                    method: 'put',
+                    url: 'https://api.spotify.com/v1/users/' + userId + '/playlists/' + playlistId + '/tracks',
+                    data: {
+                        range_start: rangeStart,
+                        range_length: 1,
+                        insert_before: insertBefore
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${appToken}`
+                    }
+                })
+                .then(r => {
+                    console.log(r)
+                })
+                .catch(e => {
+                    console.log(e)
+                })
 
 
-  });
+        });
 
-  });
+    });
 
 }
 
@@ -386,13 +400,13 @@ const songStore = firebase.database().ref().child('songs');
 
 // keep listening for any changes to the songStore nodes
 // if any changes happen, update the textContent (score) in each element
-songStore.on('value', function(snapshot){
-  for (let key in snapshot.val()){
-    var element = document.getElementById(key)
-    if (element != null){
-      element.textContent = (snapshot.val()[key]['score'])
+songStore.on('value', function(snapshot) {
+    for (let key in snapshot.val()) {
+        var element = document.getElementById(key)
+        if (element != null) {
+            element.textContent = (snapshot.val()[key]['score'])
+        }
     }
-  }
 })
 
 // skipStore is a reference to the "skip" key in the firebase db. It just has a number value
@@ -400,11 +414,11 @@ songStore.on('value', function(snapshot){
 const skipStore = firebase.database().ref().child('skip');
 
 // update the dom as the value changes
-skipStore.on('value', function(snapshot){
-  var element = document.getElementById('score')
-  if (element != null){
-    element.textContent = snapshot.val()
-  }
+skipStore.on('value', function(snapshot) {
+    var element = document.getElementById('score')
+    if (element != null) {
+        element.textContent = snapshot.val()
+    }
 })
 
 
