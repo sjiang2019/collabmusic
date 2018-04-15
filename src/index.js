@@ -41,7 +41,8 @@ function getCurrentSong() {
     ).then(r => {
         const skipObject = firebase.database().ref().child('skip')
         skipObject.once("value", function(data) {
-            appendCurrentTrack(r.data.item.name, r.data.item.artists[0].name, r.data.item.album.name, data.val())
+            // console.log(r.data.item.href)
+            appendCurrentTrack(r.data.item.name, r.data.item.artists[0].name, r.data.item.album.name, data.val(), r.data.item.album.images[2].url)
         })
     })
 }
@@ -49,8 +50,8 @@ function getCurrentSong() {
 var trackId = [];
 
 /**
- * Function to get all tracks and render them to the screen. Makes a call to the playlist/id/tracks 
- * endpoint and on success loops through each track and appends the relevant information, 
+ * Function to get all tracks and render them to the screen. Makes a call to the playlist/id/tracks
+ * endpoint and on success loops through each track and appends the relevant information,
  * such as song name, artist, and album.
  */
 function getAllTracks() {
@@ -63,11 +64,12 @@ function getAllTracks() {
         )
         .then(function(r) {
             r.data.items.map((item) => {
+              // console.log(item.track.album.images[0].url)
 
                 dbRefObject.once('value').then(function(snapshot) {
                     if (snapshot.val()[item.track.name] != undefined) {
-                        appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score);
                         trackId.push(item.track.id);
+                        appendSong(item.track.name, item.track.artists[0].name, item.track.album.name, snapshot.val()[item.track.name].score, item.track.album.images[2].url);
                     }
                 })
             })
@@ -160,11 +162,11 @@ function addRecToPage(recName, recArtist, album) {
 /**
  * Function to append the current track with a skip button
  * @param {*} name: song name
- * @param {*} artistName 
- * @param {*} albumName 
- * @param {*} score 
+ * @param {*} artistName
+ * @param {*} albumName
+ * @param {*} score
  */
-function appendCurrentTrack(trackName, artistName, albumName, score) {
+function appendCurrentTrack(trackName, artistName, albumName, score, albumCover) {
 
     var mdcCardContainer = document.createElement("div");
     mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
@@ -189,6 +191,7 @@ function appendCurrentTrack(trackName, artistName, albumName, score) {
     // create and append up arrow
     var upArrow = document.createElement("img");
     upArrow.setAttribute("src", "src/up-arrow.png");
+    upArrow.setAttribute("id", "arrow");
     arrowContainerNode.appendChild(upArrow);
     upArrow.setAttribute("id", "arrow");
     upArrow.onclick = function() { clickSkipArrow() };
@@ -206,6 +209,14 @@ function appendCurrentTrack(trackName, artistName, albumName, score) {
     downArrow.setAttribute("id", "arrow");
     arrowContainerNode.appendChild(downArrow);
     downArrow.onclick = function() { clickDownArrow(trackName) };
+
+    // create and append the album cover for each song
+    var albumCoverNode = document.createElement("div");
+    albumCoverNode.setAttribute("class", "album-cover");
+    var cover = document.createElement('img')
+    cover.setAttribute('src', albumCover)
+    albumCoverNode.appendChild(cover)
+    parentNode.appendChild(albumCoverNode);
 
     // create container node for tracks
     var trackContainerNode = document.createElement("div");
@@ -233,17 +244,18 @@ function appendCurrentTrack(trackName, artistName, albumName, score) {
     trackContainerNode.appendChild(trackArtistNode);
     trackContainerNode.appendChild(trackAlbumNode);
 
+
 }
 
 
 /**
  * Function to append a song container with the song's information
- * @param {*} trackName 
- * @param {*} artistName 
- * @param {*} albumName 
- * @param {*} score 
+ * @param {*} trackName
+ * @param {*} artistName
+ * @param {*} albumName
+ * @param {*} score
  */
-function appendSong(trackName, artistName, albumName, score) {
+function appendSong(trackName, artistName, albumName, score, albumCover) {
 
     var mdcCardContainer = document.createElement("div");
     mdcCardContainer.setAttribute("class", "mdc-card mdc-card-container");
@@ -286,6 +298,15 @@ function appendSong(trackName, artistName, albumName, score) {
     arrowContainerNode.appendChild(downArrow);
     downArrow.onclick = function() { clickDownArrow(trackName) };
 
+    // create and append the album cover for each song
+    var albumCoverNode = document.createElement("div");
+    albumCoverNode.setAttribute("class", "album-cover");
+    var cover = document.createElement('img')
+    cover.setAttribute('src', albumCover)
+    albumCoverNode.appendChild(cover)
+    parentNode.appendChild(albumCoverNode);
+
+
     // create container node for tracks
     var trackContainerNode = document.createElement("div");
     trackContainerNode.setAttribute("class", "track-container");
@@ -307,18 +328,21 @@ function appendSong(trackName, artistName, albumName, score) {
     trackAlbumNode.setAttribute("class", "song-left small");
     trackAlbumNode.textContent = "Album: " + albumName;
 
+
     // append track name node to parent
     trackContainerNode.appendChild(trackNameNode);
     trackContainerNode.appendChild(trackArtistNode);
     trackContainerNode.appendChild(trackAlbumNode);
+    // parentNode.appendChild(albumCoverNode);
+
 
 }
 
 /**
  * Function to skip the current song
  * Keeps track of the value "skip" in the firebase database. Once the value becomes > 9, i.e 10 people want
- * to skip the song, the function makes an axios call to play the next song. The value in the firebase 
- * db then resets to 0 
+ * to skip the song, the function makes an axios call to play the next song. The value in the firebase
+ * db then resets to 0
  */
 function clickSkipArrow() {
     const dbRef = firebase.database().ref()
@@ -363,7 +387,7 @@ function clickSkipArrow() {
 
 /**
  * Function to increment a song's score and reorder accordingly
- * @param {*} trackName 
+ * @param {*} trackName
  */
 function clickUpArrow(trackName) {
     var newOldIndex = 0;
