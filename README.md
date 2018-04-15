@@ -13,10 +13,10 @@ Every social event or group hangout is bound to have music playing in the backgr
 With our app, anyone with access to an instance of playlist can have their musical input and preferences considered. We've created a crowd-voting mechanism that places songs higher up on the playlist based on number of votes.
 
 ### Crowd-Veto
-Have you ever started playing a song before realizing how much you disliked it? Our app also includes a crowd-veto feature that skips the current song, if enough people vote to skip it. 
+Have you ever started playing a song before realizing how much you disliked it? Our app also includes a crowd-veto feature that skips the current song, if enough people vote to skip it.
 
 ### Recommendations
-Our app supplies three recommendations based off of the current state of the playlist. 
+Our app supplies three recommendations based off of the current state of the playlist.
 
 ## Getting started
 - `npm install` or `yarn install`
@@ -39,3 +39,4 @@ Our app supplies three recommendations based off of the current state of the pla
 
 
 
+- There are also some scaling issues on mobile devices where songs with long names may run off the screen.
