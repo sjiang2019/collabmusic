@@ -1,10 +1,22 @@
-#CollabMusic
+# Collabify: _Save the worst songs for last_
 
-Alex Chan, Steven Jiang, Drew Leonard
+#### Alex Chan, Steven Jiang, Drew Leonard
 
-In most social events/gatherings, there is bound to be music playing in the background. Whether you're meeting up with a group of friends, studying in One Wheelock, hanging out in a frat basement, or any other environment there is usually a spotify playlist that supplies the music. The problem is that only one person can control that instance of the playlist, leaving everyone else with no other option but to listen along.
+## Overview
 
-With our app, anyone with the link to the page can have their musical input and preferences considered. We've created a voting system that more-liked songs higher up on the playlist and created a feature that skips songs that people hate. 
+Every social event or group hangout is bound to have music playing in the background. Whether you're meeting up with a group of friends, studying in One Wheelock, or hanging out in a frat basement, there is usually a Spotify playlist controlling the atmosphere from behind the scenes. In the current state of the world, one person controls the playlist, leaving everyone else with no other option but to listen along. With Collabify, we envision a world where everyone has the autonomy to choose what songs shape their atmosphere.
+
+## Features
+
+### Crowd-Voting
+
+With our app, anyone with access to an instance of playlist can have their musical input and preferences considered. We've created a crowd-voting mechanism that places songs higher up on the playlist based on number of votes.
+
+### Crowd-Veto
+Have you ever started playing a song before realizing how much you disliked it? Our app also includes a crowd-veto feature that skips the current song, if enough people vote to skip it. 
+
+### Recommendations
+Our app supplies three recommendations based off of the current state of the playlist. 
 
 ## Getting started
 - `npm install` or `yarn install`
@@ -19,12 +31,11 @@ With our app, anyone with the link to the page can have their musical input and 
 
 	- an https link will be generated that tunnels back to your localhost:8080
 
+## Stack
+* Firebase
+* Spotify Web API
+* Webpack
+* Google Material Desgin Components
 
-## Future work
 
-Here are some things that didn't quite work that we hope to fix in the near future.
-
-- Our reording algorithm isn't perfect and in some edge cases may fail due to index out of bound errors. 
-
-- We had trouble getting an access token to refresh, so we just update it ourselves every 1.5 hours
 
